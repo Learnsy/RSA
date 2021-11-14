@@ -1,13 +1,13 @@
 from random import *
 
 
-def hl():  # Вызов справки
+def show_help_message():  # Вызов справки
     print('Введите "Зашифровать" для шифра текста')
     print('Введите "Расшифровать" для расшифровки текста')
     print('Введите "Завершить" для завершения работы')
 
 
-def generate_prime_number(p: int) -> int:  # Создание простого числа
+def randint_to_prime(p: int) -> int:  # Создание простого числа
     i = 1
     while i < p:
         if p % i > 0:
@@ -18,34 +18,35 @@ def generate_prime_number(p: int) -> int:  # Создание простого �
     return p
 
 
-def ran(f):  # Выдача случайного числа
-    if f == 'p':
+def generate_prime_number(range_n: str) -> int:  # Выдача случайного числа
+    if range_n == 'p':
         i = 1000
     else:
         i = 0
     p = randint(2000 + i, 3000 + i)
-    j = generate_prime_number(p)
-    return j
+    prime: int = randint_to_prime(p)
+    return prime
 
 
 def nn():
-    p = ran('p')
-    q = ran('q')
+    p = generate_prime_number('p')
+    q = generate_prime_number('q')
 
 
-def shn():
+def encrypt():
     m = int(input('Введите текст:  '))
 
 
-r = True
-while r == True:
+is_working = True
+
+while is_working:
     word = input('Введите команду:   ')
     if word == 'Завершить':
-        r = False
+        is_working = False
     elif word == 'Зашифровать':
-        shn()
+        encrypt()
     elif word == 'Помощь':
-        hl()
+        show_help_message()
     else:
         print('Команда неопознана')
-        hl()
+        show_help_message()
