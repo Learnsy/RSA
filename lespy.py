@@ -1,35 +1,42 @@
 from random import *
 
+
 class PublicKey:
     def __init__(self, e: int, n: int):
         self.e: int = e
         self.n: int = n
+
 
 class PrivateKey:
     def __init__(self, d: int, n: int):
         self.d: int = d
         self.n: int = n
 
+
 def show_help_message():  # Вызов справки
     print('Введите "Зашифровать" для шифра текста')
     print('Введите "Расшифровать" для расшифровки текста')
     print('Введите "Завершить" для завершения работы')
 
-def text(text_str: str) -> int:
+
+def text(text_str: str) -> list:
     i = len(text_str)
     text_int = []
-    for j in range(i):
-        text_int[j] = ord(text_str[j])
+    j = 0
+    for symbol in text_str:
+        text_int.append(ord(symbol))
     return text_int
 
+
 def randint_to_prime(p: int) -> int:  # Создание простого числа
-    i = 1
+    i = 2
     while i < p:
         if p % i > 0:
             i += 1
         else:
             p += 1
-            i = 1
+            i = 2
+    print(str(p))
     return p
 
 
@@ -50,8 +57,9 @@ def nn():
     fun = (p - 1) * (q - 1)
     return n, fun
 
-def key() -> tuple: # Генератор ключей
-    e = randint(100, 999)
+
+def key() -> tuple:  # Генератор ключей
+    e = randint(10, 99)
     n, fun = nn()
     i = 2
     while i <= e:
@@ -61,22 +69,29 @@ def key() -> tuple: # Генератор ключей
         else:
             i += 1
     d = randint(100, 999)
-    while d*e % fun != 1:
+    while d * e % fun != 1:
         d += 1
     public_key: PublicKey = PublicKey(e=e, n=n)
     private_key: PrivateKey = PrivateKey(d=d, n=n)
     return public_key, private_key
 
+
+def encrypt_text_to_bytes(encrypt_text: list) -> bytes:
+    return b''.join(item.to_bytes(4, "big") for item in encrypt_text)
+
+
 def encrypt():
-    text_str = int(input('Введите текст:  '))
+    text_str = input('Введите текст:  ')
     text_int = text(text_str)
     encrypt_text = []
-    i = len(text_int)
-    for j in range(i):
-        encrypt_text[j] = text_int[j] ** PrivateKey.d % PrivateKey.n
-    open('encrypt_text.txt', 'w')
-    f.write(encrypt_text + '\n')
-    print('Ключ для расшифровки: ' + PublicKey.e + PublicKey.n)
+    public_key, private_key = key()
+    for j in range(len(text_int)):
+        encrypt_text.append(text_int[j] ** private_key.d % private_key.n)
+    with open('encrypt_text.txt', 'wb') as file:
+        to_file_bytes = encrypt_text_to_bytes(encrypt_text)
+        file.write(to_file_bytes)
+    print('Ключ для расшифровки: ' + str(public_key.e) + ', '+ str(public_key.n))
+
 
 is_working = True
 
@@ -85,8 +100,8 @@ while is_working:
     if word == 'Завершить':
         is_working = False
     elif word == 'Получить ключ':
-        key()
-        print('Открытый ключ:' + str(PublicKey.e) + ',' + str(PublicKey.n))
+        public_key, private_key = key()
+        print('Открытый ключ:' + str(public_key.e) + ', ' + str(public_key.n))
     elif word == 'Зашифровать':
         encrypt()
     elif word == 'Помощь':
